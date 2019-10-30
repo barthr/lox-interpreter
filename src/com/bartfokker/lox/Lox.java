@@ -9,7 +9,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class Lox {
-    static boolean hadError = false;
+    private static boolean hadError = false;
 
     public static void main(String[] args) throws IOException {
         if (args.length > 1) {
@@ -25,7 +25,7 @@ public class Lox {
     }
 
     private static void runFile(String path) throws IOException {
-        byte[] bytes = Files.readAllBytes(Paths.get(path));
+        var bytes = Files.readAllBytes(Paths.get(path));
         run(new String(bytes, Charset.defaultCharset()));
 
         if (hadError) {
@@ -34,8 +34,8 @@ public class Lox {
     }
 
     private static void runPrompt() throws IOException {
-        InputStreamReader input = new InputStreamReader(System.in);
-        BufferedReader reader = new BufferedReader(input);
+        var input = new InputStreamReader(System.in);
+        var reader = new BufferedReader(input);
 
         while (true) {
             System.out.println("> ");
@@ -45,8 +45,8 @@ public class Lox {
     }
 
     private static void run(String source) {
-        Scanner scanner = new Scanner(source);
-        List<Token> tokens = scanner.scanTokens();
+        var scanner = new Scanner(source);
+        var tokens = scanner.scanTokens();
 
         // print tokens for now
         for (Token token : tokens) {
@@ -59,7 +59,7 @@ public class Lox {
     }
 
     private static void report(int line, String where, String message) {
-        String errorLine = String.format("[line %d] Error%s: %s", line, where, message);
+        var errorLine = String.format("[line %d] Error%s: %s", line, where, message);
         System.err.println(errorLine);
         hadError = true;
     }

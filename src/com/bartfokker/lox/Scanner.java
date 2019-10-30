@@ -51,7 +51,7 @@ class Scanner {
     }
 
     private void scanToken() {
-        char c = advance();
+        var c = advance();
         switch (c) {
             case '(':
                 addToken(TokenType.LEFT_PAREN);
@@ -135,8 +135,8 @@ class Scanner {
         while (isAlphaNumeric(peek())) {
             advance();
         }
-        String text = source.substring(start, current);
-        TokenType type = keywords.get(text);
+        var text = source.substring(start, current);
+        var type = keywords.get(text);
         // This will make sure that our "reserved" keywords are not scanned as identifiers
         if (type == null) type = TokenType.IDENTIFIER;
         addToken(type);
@@ -175,13 +175,13 @@ class Scanner {
 
         advance();
 
-        String value = source.substring(start + 1, current - 1);
+        var value = source.substring(start + 1, current - 1);
         addToken(TokenType.STRING, value);
     }
 
     private void multilineComment() {
         // we matched a multiline comment
-        int commentSections = 1;
+        var commentSections = 1;
         while (true) {
             char current = peek();
 
@@ -269,7 +269,7 @@ class Scanner {
     }
 
     private void addToken(TokenType tokenType, Object literal) {
-        String text = source.substring(start, current);
+        var text = source.substring(start, current);
         tokens.add(new Token(tokenType, text, literal, line));
     }
 }
