@@ -200,6 +200,9 @@ class Scanner {
             advance();
 
             if (isAtEnd()) {
+                if (commentSections > 0) {
+                    Lox.error(line, "Unterminated block comment.");
+                }
                 break;
             }
 
