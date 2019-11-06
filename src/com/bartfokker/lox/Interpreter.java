@@ -24,6 +24,14 @@ class Interpreter implements Expr.Visitor<Object> {
         return object.toString();
     }
 
+    private String normalizeDoubleString(Double value) {
+        String text = value.toString();
+        if (text.endsWith(".0")) {
+            text = text.substring(0, text.length() - 2);
+        }
+        return text;
+    }
+
     @Override
     public Object visitBinaryExpr(Expr.Binary expr) {
         var left = evaluate(expr.left);
@@ -80,14 +88,6 @@ class Interpreter implements Expr.Visitor<Object> {
         }
         throw new RuntimeError(token,
                 "Operands must be two numbers or two strings.");
-    }
-
-    private String normalizeDoubleString(Double value) {
-        String text = value.toString();
-        if (text.endsWith(".0")) {
-            text = text.substring(0, text.length() - 2);
-        }
-        return text;
     }
 
 
