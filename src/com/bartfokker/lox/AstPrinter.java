@@ -18,7 +18,7 @@ public class AstPrinter implements Expr.Visitor<String> {
     @Override
     public String visitLiteralExpr(Expr.Literal expr) {
         if (expr == null) {
-           return "nil";
+            return "nil";
         }
         return expr.value.toString();
     }
@@ -26,6 +26,11 @@ public class AstPrinter implements Expr.Visitor<String> {
     @Override
     public String visitUnaryExpr(Expr.Unary expr) {
         return parenthesize(expr.operator.lexeme, expr.right);
+    }
+
+    @Override
+    public String visitConditionalExpr(Expr.Conditional expr) {
+        return parenthesize("condition", expr.condition, expr.thenBranch, expr.elseBranch);
     }
 
     private String parenthesize(String name, Expr... exprs) {

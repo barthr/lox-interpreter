@@ -23,7 +23,32 @@ class Parser {
     }
 
     private Expr expression() {
-        return equality();
+        return comma();
+    }
+
+    private Expr comma() {
+        Expr expr = conditional();
+        if (match(TokenType.COMMA)) {
+            Token operator = previous();
+            Expr right = conditional();
+            expr = new Expr.Binary(expr, operator, right);
+        }
+        return expr;
+    }
+
+    private Expr conditional() {
+        Expr expr = equality();
+
+        // Consume question mark
+        if (match(TokenType.QUESTION)) {
+            // look for the next expression (e.g 1 == 1 ? (expression) )
+            var thenBranch = expression();
+            // consume colon because that is expected (e.g 1 == 1 ? (expression) : (conditional) )
+            consume(TokenType.COLON, "Expect ':' after then branch of conditional expression.");
+            var elseBranch = conditional();
+            expr = new Expr.Conditional(expr, thenBranch, elseBranch);
+        }
+        return expr;
     }
 
     private Expr equality() {
