@@ -1,5 +1,7 @@
 package com.bartfokker.lox;
 
+import java.util.Stack;
+
 class Interpreter implements Expr.Visitor<Object> {
 
     void interpret(Expr expression) {
@@ -16,11 +18,7 @@ class Interpreter implements Expr.Visitor<Object> {
 
         // Yikes. Work around Java adding ".0" to integer-valued doubles.
         if (object instanceof Double) {
-            String text = object.toString();
-            if (text.endsWith(".0")) {
-                text = text.substring(0, text.length() - 2);
-            }
-            return text;
+            return normalizeDoubleString((Double) object);
         }
 
         return object.toString();
@@ -50,20 +48,12 @@ class Interpreter implements Expr.Visitor<Object> {
                 checkNumberOperands(expr.operator, left, right);
                 return (double) left - (double) right;
             case PLUS:
-                // here we are "overloading" the operator
-                // we allow both numbers and strings to be merged together using a PLUS operator
-                if (left instanceof Double && right instanceof Double) {
-                    return (double) left + (double) right;
-                }
-
-                if (left instanceof String && right instanceof String) {
-                    return (String) left + (String) right;
-                }
-
-                throw new RuntimeError(expr.operator,
-                        "Operands must be two numbers or two strings.");
+                return addExpressions(expr.operator, left, right);
             case SLASH:
                 checkNumberOperands(expr.operator, left, right);
+                if ((double) right == 0) {
+                    throw new RuntimeError(expr.operator, "Division by zero.");
+                }
                 return (double) left / (double) right;
             case STAR:
                 checkNumberOperands(expr.operator, left, right);
@@ -76,6 +66,38 @@ class Interpreter implements Expr.Visitor<Object> {
         }
 
         return null;
+    }
+
+    private Object addExpressions(Token token, Object left, Object right) {
+        // here we are "overloading" the operator
+        // we allow both numbers and strings to be merged together using a PLUS operator
+
+        if (left instanceof Double && right instanceof Double) {
+            return (double) left + (double) right;
+        }
+
+        if (left instanceof String && right instanceof String) {
+            return (String) left + (String) right;
+        }
+
+        if (left instanceof String && right instanceof Double) {
+            return (String) left + normalizeDoubleString((Double) right);
+        }
+
+        if (left instanceof Double && right instanceof String) {
+            return normalizeDoubleString((Double) left) + (String) right;
+        }
+
+        throw new RuntimeError(token,
+                "Operands must be two numbers or two strings.");
+    }
+
+    private String normalizeDoubleString(Double value) {
+        String text = value.toString();
+        if (text.endsWith(".0")) {
+            text = text.substring(0, text.length() - 2);
+        }
+        return text;
     }
 
 
