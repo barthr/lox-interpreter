@@ -182,7 +182,7 @@ class Scanner {
     private void multilineComment() {
         // we matched a multiline comment
         var commentSections = 1;
-        while (true) {
+        while (!isAtEnd()) {
             char current = peek();
 
             if (current == '/' && peekNext() == '*') {
@@ -199,17 +199,14 @@ class Scanner {
 
             advance();
 
-            if (isAtEnd()) {
-                if (commentSections > 0) {
-                    Lox.error(line, "Unterminated block comment.");
-                }
-                break;
-            }
-
             if (commentSections == 0) {
                 advance();
                 break;
             }
+        }
+
+        if (commentSections > 0) {
+            Lox.error(line, "Unterminated block comment.");
         }
     }
 
