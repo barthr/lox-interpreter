@@ -71,23 +71,13 @@ class Interpreter implements Expr.Visitor<Object> {
     private Object addExpressions(Token token, Object left, Object right) {
         // here we are "overloading" the operator
         // we allow both numbers and strings to be merged together using a PLUS operator
+        if (left instanceof String || right instanceof String) {
+            return stringify(left) + stringify(right);
+        }
 
         if (left instanceof Double && right instanceof Double) {
             return (double) left + (double) right;
         }
-
-        if (left instanceof String && right instanceof String) {
-            return (String) left + (String) right;
-        }
-
-        if (left instanceof String && right instanceof Double) {
-            return (String) left + normalizeDoubleString((Double) right);
-        }
-
-        if (left instanceof Double && right instanceof String) {
-            return normalizeDoubleString((Double) left) + (String) right;
-        }
-
         throw new RuntimeError(token,
                 "Operands must be two numbers or two strings.");
     }
