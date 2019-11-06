@@ -1,7 +1,7 @@
 package com.bartfokker.lox;
 
 public class AstPrinter implements Expr.Visitor<String> {
-    private String print(Expr expr) {
+    String print(Expr expr) {
         return expr.accept(this);
     }
 
