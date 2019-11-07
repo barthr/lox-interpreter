@@ -1,6 +1,7 @@
 package com.bartfokker.lox;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 class Parser {
@@ -14,7 +15,12 @@ class Parser {
         this.tokens = tokens;
     }
 
-    Expr parse() {
+    List<Stmt> parse() {
+        List<Stmt> statements = new ArrayList<>();
+        while (!isAtEnd()) {
+            statements.add(statement());
+        }
+        return statements;
         try {
             return expression();
         } catch (ParseError error) {
