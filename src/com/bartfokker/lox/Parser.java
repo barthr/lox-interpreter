@@ -16,16 +16,29 @@ class Parser {
     }
 
     List<Stmt> parse() {
-        List<Stmt> statements = new ArrayList<>();
+        var statements = new ArrayList<Stmt>();
         while (!isAtEnd()) {
             statements.add(statement());
         }
         return statements;
-        try {
-            return expression();
-        } catch (ParseError error) {
-            return null;
-        }
+    }
+
+    private Stmt statement() {
+        if (match(TokenType.PRINT)) return printStatement();
+
+        return expressionStatement();
+    }
+
+    private Stmt printStatement() {
+        Expr value = expression();
+        consume(TokenType.SEMICOLON, "Expect ';' after value.");
+        return new Stmt.Print(value);
+    }
+
+    private Stmt expressionStatement() {
+        Expr expr = expression();
+        consume(TokenType.SEMICOLON, "Expect ';' after expression.");
+        return new Stmt.Expression(expr);
     }
 
     private Expr expression() {
