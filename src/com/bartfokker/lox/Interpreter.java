@@ -3,7 +3,7 @@ package com.bartfokker.lox;
 import java.util.List;
 
 class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
-    private Environment environment = new Environment(enclosing);
+    private Environment environment = new Environment();
 
     void interpret(List<Stmt> statements) {
         try {
@@ -199,6 +199,11 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     public Void visitPrintStmt(Stmt.Print stmt) {
         Object value = evaluate(stmt.expression);
         System.out.println(stringify(value));
+        return null;
+    }
+
+    @Override
+    public Void visitBlockStmt(Stmt.Block stmt) {
         return null;
     }
 }
