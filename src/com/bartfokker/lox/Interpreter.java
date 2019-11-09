@@ -3,6 +3,7 @@ package com.bartfokker.lox;
 import java.util.List;
 
 class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
+    private Environment environment = new Environment(enclosing);
 
     void interpret(List<Stmt> statements) {
         try {
@@ -114,6 +115,11 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
+    public Object visitVariableExpr(Expr.Variable expr) {
+        return environment.get(expr.name);
+    }
+
+    @Override
     public Object visitUnaryExpr(Expr.Unary expr) {
         // this is post order because each node evaluates the children before doing it's own work
         var right = evaluate(expr.right);
@@ -160,6 +166,14 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         return evaluate(expr.elseBranch);
     }
 
+    @Override
+    public Object visitAssignExpr(Expr.Assign expr) {
+        var value = evaluate(expr.value);
+
+        environment.assign(expr.name, value);
+        return value;
+    }
+
     private Object evaluate(Expr expression) {
         return expression.accept(this);
     }
@@ -167,6 +181,17 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     @Override
     public Void visitExpressionStmt(Stmt.Expression stmt) {
         evaluate(stmt.expression);
+        return null;
+    }
+
+    @Override
+    public Void visitVarStmt(Stmt.Var stmt) {
+        Object value = null;
+        if (stmt.initializer != null) {
+            value = evaluate(stmt.initializer);
+        }
+
+        environment.define(stmt.name.lexeme, value);
         return null;
     }
 

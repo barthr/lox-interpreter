@@ -18,9 +18,32 @@ class Parser {
     List<Stmt> parse() {
         var statements = new ArrayList<Stmt>();
         while (!isAtEnd()) {
-            statements.add(statement());
+            statements.add(declaration());
         }
         return statements;
+    }
+
+    private Stmt declaration() {
+        try {
+            if (match(TokenType.VAR)) return varDeclaration();
+
+            return statement();
+        } catch (ParseError error) {
+            synchronize();
+            return null;
+        }
+    }
+
+    private Stmt varDeclaration() {
+        var name = consume(TokenType.IDENTIFIER, "Expected variable name.");
+
+        Expr initializer = null;
+        if (match(TokenType.EQUAL)) {
+            initializer = expression();
+        }
+
+        consume(TokenType.SEMICOLON, "Expected ';' after variable declaration.");
+        return new Stmt.Var(name, initializer);
     }
 
     private Stmt statement() {
@@ -46,11 +69,28 @@ class Parser {
     }
 
     private Expr comma() {
-        Expr expr = conditional();
+        Expr expr = assignment();
         if (match(TokenType.COMMA)) {
             Token operator = previous();
-            Expr right = conditional();
+            Expr right = assignment();
             expr = new Expr.Binary(expr, operator, right);
+        }
+        return expr;
+    }
+
+    private Expr assignment() {
+        var expr = conditional();
+
+        if (match(TokenType.EQUAL)) {
+            var equals = previous();
+            var value = assignment();
+
+            if (expr instanceof Expr.Variable) {
+                var name = ((Expr.Variable) expr).name;
+                return new Expr.Assign(name, value);
+            }
+
+            error(equals, "Invalid assignment target.");
         }
         return expr;
     }
@@ -133,6 +173,10 @@ class Parser {
 
         if (match(TokenType.NUMBER, TokenType.STRING)) {
             return new Expr.Literal(previous().literal);
+        }
+
+        if (match(TokenType.IDENTIFIER)) {
+            return new Expr.Variable(previous());
         }
 
         if (match(TokenType.LEFT_PAREN)) {
