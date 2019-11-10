@@ -178,8 +178,8 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         return expression.accept(this);
     }
 
-    private Object evaluate(Stmt stmt) {
-        return stmt.accept(this);
+    private void evaluate(Stmt stmt) {
+        stmt.accept(this);
     }
 
     @Override
@@ -214,7 +214,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Void visitIfStmt(Stmt.If stmt) {
-        if (isTruthy(stmt.condition)) {
+        if (isTruthy(evaluate(stmt.condition))) {
             evaluate(stmt.thenBranch);
         } else if (stmt.elseBranch != null) {
             evaluate(stmt.elseBranch);
