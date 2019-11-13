@@ -133,6 +133,19 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         return null;
     }
 
+    @Override
+    public Object visitLogicalExpr(Expr.Logical expr) {
+        var left = evaluate(expr.left);
+
+        if (expr.operator.type == TokenType.OR) {
+            if (isTruthy(left)) return left;
+        } else {
+            if (!isTruthy(left)) return left;
+        }
+
+        return evaluate(expr.right);
+    }
+
     // Runtime type checking for valid expressions
     private void checkNumberOperand(Token operator, Object operand) {
         if (operand instanceof Double) return;

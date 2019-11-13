@@ -44,7 +44,7 @@ public class Lox {
         var reader = new BufferedReader(input);
 
         while (true) {
-            System.out.print("> ");
+            System.out.println("> ");
             run(reader.readLine());
             hadError = false;
         }

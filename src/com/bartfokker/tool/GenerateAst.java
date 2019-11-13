@@ -20,6 +20,7 @@ public class GenerateAst {
                 "Literal    : Object value",
                 "Variable   : Token name",
                 "Unary      : Token operator, Expr right",
+                "Logical    : Expr left, Token operator, Expr right",
                 "Conditional: Expr condition, Expr thenBranch, Expr elseBranch",
                 "Assign     : Token name, Expr value"
         ));
