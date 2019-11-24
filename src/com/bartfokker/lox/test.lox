@@ -1,4 +1,5 @@
 fun makeCounter() {
+
   var i = 0;
   fun count() {
     i = i + 1;
@@ -11,3 +12,4 @@ fun makeCounter() {
 var counter = makeCounter();
 counter(); // "1".
 counter(); // "2".
+
