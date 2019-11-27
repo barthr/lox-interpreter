@@ -10,6 +10,8 @@ abstract class Stmt {
     R visitPrintStmt(Print stmt);
     R visitReturnStmt(Return stmt);
     R visitBlockStmt(Block stmt);
+
+      R visitClassStmt(Class stmt);
     R visitIfStmt(If stmt);
     R visitFunctionStmt(Function stmt);
   }
@@ -85,6 +87,20 @@ abstract class Stmt {
 
     final List<Stmt> statements;
   }
+
+    static class Class extends Stmt {
+        final Token name;
+        final List<Stmt.Function> methods;
+
+        Class(Token name, List<Stmt.Function> methods) {
+            this.name = name;
+            this.methods = methods;
+        }
+
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitClassStmt(this);
+        }
+    }
   static class If extends Stmt {
     If(Expr condition, Stmt thenBranch, Stmt elseBranch) {
       this.condition = condition;

@@ -6,10 +6,16 @@ abstract class Expr {
   interface Visitor<R> {
     R visitBinaryExpr(Binary expr);
     R visitCallExpr(Call expr);
+
+      R visitGetExpr(Get expr);
     R visitGroupingExpr(Grouping expr);
     R visitLiteralExpr(Literal expr);
     R visitVariableExpr(Variable expr);
     R visitUnaryExpr(Unary expr);
+
+      R visitSetExpr(Set expr);
+
+      R visitThisExpr(This expr);
     R visitLogicalExpr(Logical expr);
     R visitConditionalExpr(Conditional expr);
     R visitAssignExpr(Assign expr);
@@ -44,6 +50,20 @@ abstract class Expr {
     final Token paren;
     final List<Expr> arguments;
   }
+
+    static class Get extends Expr {
+        final Expr object;
+        final Token name;
+
+        Get(Expr object, Token name) {
+            this.object = object;
+            this.name = name;
+        }
+
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitGetExpr(this);
+        }
+    }
   static class Grouping extends Expr {
     Grouping(Expr expression) {
       this.expression = expression;
@@ -77,19 +97,48 @@ abstract class Expr {
 
     final Token name;
   }
-  static class Unary extends Expr {
-    Unary(Token operator, Expr right) {
-      this.operator = operator;
-      this.right = right;
+
+    static class Unary extends Expr {
+        Unary(Token operator, Expr right) {
+            this.operator = operator;
+            this.right = right;
+        }
+
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitUnaryExpr(this);
+        }
+
+        final Token operator;
+        final Expr right;
     }
 
-    <R> R accept(Visitor<R> visitor) {
-      return visitor.visitUnaryExpr(this);
+    static class Set extends Expr {
+        final Expr object;
+        final Token name;
+        final Expr value;
+
+        Set(Expr object, Token name, Expr value) {
+            this.object = object;
+            this.name = name;
+            this.value = value;
+        }
+
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitSetExpr(this);
+        }
     }
 
-    final Token operator;
-    final Expr right;
-  }
+    static class This extends Expr {
+        final Token keyword;
+
+        This(Token keyword) {
+            this.keyword = keyword;
+        }
+
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitThisExpr(this);
+        }
+    }
   static class Logical extends Expr {
     Logical(Expr left, Token operator, Expr right) {
       this.left = left;
