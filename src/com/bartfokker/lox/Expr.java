@@ -99,6 +99,9 @@ abstract class Expr {
   }
 
     static class Unary extends Expr {
+        final Token operator;
+        final Expr right;
+
         Unary(Token operator, Expr right) {
             this.operator = operator;
             this.right = right;
@@ -107,9 +110,6 @@ abstract class Expr {
         <R> R accept(Visitor<R> visitor) {
             return visitor.visitUnaryExpr(this);
         }
-
-        final Token operator;
-        final Expr right;
     }
 
     static class Set extends Expr {
@@ -125,7 +125,7 @@ abstract class Expr {
 
         <R> R accept(Visitor<R> visitor) {
             return visitor.visitSetExpr(this);
-        }
+    }
     }
 
     static class This extends Expr {
